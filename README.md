@@ -1,4 +1,6 @@
-# World Monitor
+# World Monitor [Black Swan Edition] Forked from Koala73's Worldmonitor Project
+![World Monitor Dashboard](Screenshot2.png)
+Utilizing X.com algorithm + Bayesian + Martingale and Black swan theory to isolate and predict confluence of events and black swan indicators.
 
 Real-time global intelligence dashboard aggregating news, markets, geopolitical data, and infrastructure monitoring into a unified situation awareness interface.
 
