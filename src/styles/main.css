@@ -240,25 +240,84 @@ body {
 .main-content {
   flex: 1;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
   background: var(--bg);
 }
 
-.map-section {
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.top-area {
+  display: flex;
   height: 65vh;
-  min-height: 400px;
+  min-height: 450px;
   max-height: 85vh;
-  border: 1px solid var(--border);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+}
+
+.map-section {
+  flex: 1;
   background: var(--surface);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
   position: relative;
+}
+
+.black-swan-section {
+  width: 0;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  border-left: none;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.main-content.black-swan-active .black-swan-section {
+  width: 450px;
+  border-left: 1px solid var(--border);
 }
 
 .map-section.hidden {
   display: none;
+}
+
+@media (max-width: 1200px) {
+  .main-content.black-swan-active .black-swan-section {
+    width: 350px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .layout-main {
+    flex: none;
+    height: auto;
+  }
+
+  .top-area {
+    height: 50vh;
+    max-height: none;
+  }
+  
+  .main-content.black-swan-active .black-swan-section {
+    width: 100%;
+    height: 500px;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
 }
 
 .map-section .panel-header {

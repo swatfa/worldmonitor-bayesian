@@ -833,44 +833,46 @@ npm run dev
 npm run build
 ```
 
-## API Dependencies
+## API Configuration
 
-The dashboard fetches data from various public APIs and data sources:
+The dashboard works out-of-the-box for news and basic maps, but requires API keys for advanced intelligence layers.
 
-| Service | Data | Auth Required |
-|---------|------|---------------|
-| RSS2JSON | News feed parsing | No |
-| Finnhub | Stock quotes (primary) | Yes (free) |
-| Yahoo Finance | Stock indices & commodities (backup) | No |
-| CoinGecko | Cryptocurrency prices | No |
-| USGS | Earthquake data | No |
-| NWS | Weather alerts | No |
-| FRED | Economic indicators (Fed data) | No |
-| Polymarket | Prediction markets | No |
-| ACLED | Armed conflict & protest data | Yes (free) |
-| GDELT Geo | News-derived event geolocation + tensions | No |
-| GDELT Doc | Topic-based intelligence feeds (cyber, military, nuclear) | No |
-| FAA NASSTATUS | Airport delay status | No |
-| Cloudflare Radar | Internet outage data | Yes (free) |
-| AISStream | Live vessel positions | Yes (relay) |
-| OpenSky Network | Military aircraft tracking | Yes (free) |
-| PizzINT | Pentagon-area activity metrics | No |
+### 1. Setup Environment Variables
+Create a `.env` file in the root directory. **Do not push this file to GitHub** (it is already in `.gitignore`).
 
-### Optional API Keys
+```env
+# Finnhub - Stock quotes (Free key: https://finnhub.io/)
+FINNHUB_API_KEY=your_key
 
-Some features require API credentials. Without them, the corresponding layer is hidden:
+# FRED - Economic indicators (Free key: https://fred.stlouisfed.org/)
+FRED_API_KEY=your_key
 
-| Variable | Service | How to Get |
-|----------|---------|------------|
-| `FINNHUB_API_KEY` | Stock quotes (primary) | Free registration at [finnhub.io](https://finnhub.io/) |
-| `VITE_WS_RELAY_URL` | AIS vessel tracking | Deploy AIS relay or use hosted service |
-| `VITE_OPENSKY_RELAY_URL` | Military aircraft | Deploy OpenSky relay (rate limit bypass) |
-| `CLOUDFLARE_API_TOKEN` | Internet outages | Free Cloudflare account with Radar access |
-| `ACLED_ACCESS_TOKEN` | Protest data (server-side) | Free registration at acleddata.com |
+# ACLED - Protest data (Free registration: https://acleddata.com/)
+ACLED_EMAIL=your_email
+ACLED_PASSWORD=your_password
 
-The dashboard functions fully without these keys—affected layers simply don't appear. Core functionality (news, markets, earthquakes, weather) requires no configuration.
+# Cloudflare Radar - Internet outages
+CLOUDFLARE_API_TOKEN=your_token
 
-## Project Structure
+# AISStream - Live vessel tracking (Free key: https://aisstream.io/)
+AISSTREAM_API_KEY=your_key
+
+# Local WebSocket Relay URL (Required for AIS)
+VITE_WS_RELAY_URL=ws://localhost:3004
+```
+
+### 2. Live Vessel & Aircraft Tracking
+To see live military ships and aircraft, you must run the local relay server:
+```bash
+cd scripts
+npm install
+npm start
+```
+This will start the AIS relay on `ws://localhost:3004`. Ensure your `.env` has `VITE_WS_RELAY_URL=ws://localhost:3004`.
+
+---
+
+## Algorithms & Design (Black Swan v2.2)
 
 ```
 src/

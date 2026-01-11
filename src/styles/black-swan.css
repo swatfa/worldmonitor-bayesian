@@ -1,0 +1,414 @@
+/* Black Swan Advanced Side Panel Styles */
+
+.black-swan-section {
+  background: #050508;
+  color: #e0e0e0;
+  font-family: 'SF Mono', 'Fira Code', 'Monaco', monospace;
+  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.black-swan-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-left: 1px solid rgba(255, 107, 53, 0.3);
+  position: relative;
+  background-image: 
+    linear-gradient(rgba(255, 107, 53, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Header */
+.black-swan-panel .panel-header {
+  height: 45px;
+  background: rgba(255, 107, 53, 0.1);
+  border-bottom: 1px solid #ff6b35;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.swan-icon {
+  color: #ff6b35;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.5));
+}
+
+.scanning-indicator {
+  font-size: 10px;
+  color: #ff6b35;
+  letter-spacing: 2px;
+  font-weight: bold;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Scroll Container */
+.black-swan-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #ff6b35 #050508;
+}
+
+.black-swan-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.black-swan-scroll-container::-webkit-scrollbar-track {
+  background: #050508;
+}
+
+.black-swan-scroll-container::-webkit-scrollbar-thumb {
+  background: #ff6b35;
+  border-radius: 2px;
+}
+
+/* Risk Dashboard */
+.risk-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.risk-gauge-container {
+  background: rgba(255, 107, 53, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  padding: 20px;
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.risk-value {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 5px;
+  color: #ff6b35;
+  text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+.risk-label {
+  font-size: 10px;
+  color: #888;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.risk-trend {
+  font-size: 11px;
+  margin-top: 10px;
+  color: #ffaa00;
+}
+
+/* Hypothesis Summary */
+.hypothesis-summary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hyp-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ff6b35;
+  letter-spacing: 1.5px;
+}
+
+.hyp-text {
+  font-size: 12px;
+  color: #eee;
+  line-height: 1.6;
+}
+
+.hyp-commentary {
+  margin-top: 12px;
+  font-family: 'SF Pro Text', 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #aaa;
+  font-style: italic;
+  padding: 12px;
+  background: rgba(255, 107, 53, 0.05);
+  border-left: 2px solid #ff6b35;
+}
+
+/* Martingale & Bayesian Grid */
+.analysis-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.analysis-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0;
+  border-radius: 4px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #ff6b35;
+  text-transform: uppercase;
+}
+
+.martingale-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 15px;
+}
+
+.m-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-label {
+  font-size: 8px;
+  color: #666;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.m-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  color: #ffaa00;
+  font-weight: bold;
+}
+
+.hyp-reasoning {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hyp-point {
+  font-size: 11px;
+  color: #bbb;
+  padding-left: 12px;
+  line-height: 1.4;
+  border-left: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+/* 3D Viz */
+.viz-container {
+  margin-bottom: 25px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+.black-swan-cube-container {
+  height: 300px;
+  width: 100%;
+  position: relative;
+}
+
+.viz-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.viz-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ff6b35;
+  letter-spacing: 1px;
+}
+
+.narrative-card {
+  background: rgba(255, 107, 53, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.narrative-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.narrative-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.3;
+  max-width: 70%;
+}
+
+.narrative-momentum {
+  font-size: 10px;
+  font-weight: bold;
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.narrative-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 9px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.viz-subtitle {
+  font-size: 9px;
+  color: #444;
+}
+
+/* Lists */
+.signals-list, .regions-list {
+  padding: 15px;
+}
+
+.signal-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.signal-main {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.signal-score {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 16px;
+  background: rgba(255, 107, 53, 0.1);
+  color: #ff6b35;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.signal-type {
+  font-size: 9px;
+  font-weight: bold;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.signal-desc {
+  font-size: 11px;
+  color: #ddd;
+  line-height: 1.5;
+}
+
+.signal-impact-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  width: 100%;
+  position: relative;
+}
+
+.signal-impact-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #ff6b35;
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.5);
+}
+
+.region-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 8px;
+  border-left: 2px solid #ff6b35;
+}
+
+.region-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.region-val {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ff6b35;
+}
+
+/* Footer */
+.panel-footer {
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-timestamp {
+  font-size: 9px;
+  color: #444;
+}
+
+.footer-brand {
+  font-size: 10px;
+  font-weight: 900;
+  color: #ff6b35;
+  letter-spacing: 1px;
+}
+
+.loading-placeholder {
+  font-size: 11px;
+  color: #444;
+  text-align: center;
+  padding: 30px;
+  font-style: italic;
+}

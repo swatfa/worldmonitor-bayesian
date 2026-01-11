@@ -34,6 +34,8 @@ import {
   GdeltIntelPanel,
   LiveNewsPanel,
 } from '@/components';
+import { BlackSwanPanel } from '@/components/BlackSwanPanel';
+import { analyzeBlackSwans } from '@/services/black-swan-analyzer';
 import type { SearchResult } from '@/components/SearchModal';
 import { INTEL_HOTSPOTS, CONFLICT_ZONES, MILITARY_BASES, UNDERSEA_CABLES, NUCLEAR_FACILITIES } from '@/config/geo';
 import { PIPELINES } from '@/config/pipelines';
@@ -55,10 +57,15 @@ export class App {
   private statusPanel: StatusPanel | null = null;
   private exportPanel: ExportPanel | null = null;
   private searchModal: SearchModal | null = null;
+  private blackSwanPanel: BlackSwanPanel | null = null;
   private mobileWarningModal: MobileWarningModal | null = null;
   private pizzintIndicator: PizzIntIndicator | null = null;
   private latestPredictions: PredictionMarket[] = [];
   private latestMarkets: MarketData[] = [];
+  private latestSectors: MarketData[] = [];
+  private latestCommodities: MarketData[] = [];
+  private latestCrypto: any[] = [];
+  private latestEconomicData: any[] = [];
   private latestClusters: ClusteredEvent[] = [];
   private isPlaybackMode = false;
   private initialUrlState: ParsedMapUrlState | null = null;
@@ -104,6 +111,7 @@ export class App {
     this.setupPizzIntIndicator();
     this.setupExportPanel();
     this.setupSearchModal();
+    this.setupBlackSwan();
     this.setupMapLayerHandlers();
     this.setupEventListeners();
     this.setupUrlStateSync();
@@ -532,22 +540,33 @@ export class App {
         <div class="header-right">
           <button class="search-btn" id="searchBtn"><kbd>⌘K</kbd> Search</button>
           <button class="copy-link-btn" id="copyLinkBtn">Copy Link</button>
+          <button class="black-swan-btn" id="blackSwanBtn" title="Black Swan Analysis">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22,8c0,3-1.5,4.5-3,6c-1.5,1.5-2,2.5-2,4v1h-2v-1c0-2,1-3.5,2.5-5S22,11,22,8c0-2.5-1-4-2.5-4.5 c-0.5,1.5-1.5,2.5-2.5,2.5c-1,0-2-0.5-2.5-1.5C14,3.5,14,2.5,14,2c0-0.5,0-1,0.5-1.5C13.5,0.5,12.5,0,11,0C9.5,0,8.5,0.5,7.5,1.5 C8,2,8,2.5,8,3c0,0.5,0,1.5-0.5,2.5C7,6.5,6,7,5,7c-1,0-2-1-2.5-2.5C1,5,0,6.5,0,9c0,3,1.5,4.5,3,6c1.5,1.5,2,2.5,2,4v1h2v-1 c0-2-1-3.5-2.5-5S0,12,0,9c0-2.5,1-4,2.5-4.5C3,6,4,7,5,7c1,0,1.5-0.5,2-1.5C7.5,4.5,8,3.5,8,2.5C8,2,8,1.5,7.5,1 C8.5,0.5,9.5,0,11,0c1.5,0,2.5,0.5,3.5,1C14,1.5,14,2,14,2.5c0,1,0.5,2,1,3c0.5,1,1,1.5,2,1.5c1,0,2-1,2.5-2.5C21,5,22,6.5,22,8z M12,10c-0.5,0-1,0.5-1,1v9c0,0.5,0.5,1,1,1s1-0.5,1-1v-9C13,10.5,12.5,10,12,10z"/>
+            </svg>
+            Black Swan
+          </button>
           <span class="time-display" id="timeDisplay">--:--:-- UTC</span>
           <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
           <button class="settings-btn" id="settingsBtn">⚙ PANELS</button>
         </div>
       </div>
-      <div class="main-content">
-        <div class="map-section" id="mapSection">
-          <div class="panel-header">
-            <div class="panel-header-left">
-              <span class="panel-title">Global Situation</span>
+      <div class="main-content" id="mainContent">
+        <div class="layout-main">
+          <div class="top-area">
+            <div class="map-section" id="mapSection">
+              <div class="panel-header">
+                <div class="panel-header-left">
+                  <span class="panel-title">Global Situation</span>
+                </div>
+              </div>
+              <div class="map-container" id="mapContainer"></div>
+              <div class="map-resize-handle" id="mapResizeHandle"></div>
             </div>
           </div>
-          <div class="map-container" id="mapContainer"></div>
-          <div class="map-resize-handle" id="mapResizeHandle"></div>
+          <div class="panels-grid" id="panelsGrid"></div>
         </div>
-        <div class="panels-grid" id="panelsGrid"></div>
+        <div class="black-swan-section" id="blackSwanSection"></div>
       </div>
       <div class="modal-overlay" id="settingsModal">
         <div class="modal">
@@ -865,6 +884,11 @@ export class App {
 
     document.getElementById('modalClose')?.addEventListener('click', () => {
       document.getElementById('settingsModal')?.classList.remove('active');
+    });
+
+    // Black Swan Analysis button
+    document.getElementById('blackSwanBtn')?.addEventListener('click', () => {
+      this.showBlackSwanAnalysis();
     });
 
     document.getElementById('settingsModal')?.addEventListener('click', (e) => {
@@ -1246,12 +1270,14 @@ export class App {
         SECTORS.map((s) => ({ ...s, display: s.name })),
         {
           onBatch: (partialSectors) => {
+            this.latestSectors = partialSectors;
             (this.panels['heatmap'] as HeatmapPanel).renderHeatmap(
               partialSectors.map((s) => ({ name: s.name, change: s.change }))
             );
           },
         }
       );
+      this.latestSectors = sectors;
       (this.panels['heatmap'] as HeatmapPanel).renderHeatmap(
         sectors.map((s) => ({ name: s.name, change: s.change }))
       );
@@ -1259,6 +1285,7 @@ export class App {
       // Commodities
       const commodities = await fetchMultipleStocks(COMMODITIES, {
         onBatch: (partialCommodities) => {
+          this.latestCommodities = partialCommodities;
           (this.panels['commodities'] as CommoditiesPanel).renderCommodities(
             partialCommodities.map((c) => ({
               display: c.display,
@@ -1268,6 +1295,7 @@ export class App {
           );
         },
       });
+      this.latestCommodities = commodities;
       (this.panels['commodities'] as CommoditiesPanel).renderCommodities(
         commodities.map((c) => ({ display: c.display, price: c.price, change: c.change }))
       );
@@ -1278,6 +1306,7 @@ export class App {
     try {
       // Crypto
       const crypto = await fetchCrypto();
+      this.latestCrypto = crypto;
       (this.panels['crypto'] as CryptoPanel).renderCrypto(crypto);
       this.statusPanel?.updateApi('CoinGecko', { status: 'ok' });
     } catch {
@@ -1506,6 +1535,7 @@ export class App {
         return;
       }
 
+      this.latestEconomicData = data;
       economicPanel?.setErrorState(false);
       economicPanel?.update(data);
       this.statusPanel?.updateApi('FRED', { status: 'ok' });
@@ -1589,5 +1619,129 @@ export class App {
     this.scheduleRefresh('protests', () => this.loadProtests(), 15 * 60 * 1000, () => this.mapLayers.protests);
     this.scheduleRefresh('flights', () => this.loadFlightDelays(), 10 * 60 * 1000, () => this.mapLayers.flights);
     this.scheduleRefresh('military', () => this.loadMilitary(), 5 * 60 * 1000, () => this.mapLayers.military);
+  }
+
+  private setupBlackSwan(): void {
+    this.blackSwanPanel = new BlackSwanPanel('blackSwanSection');
+    // Hide by default
+    const section = document.getElementById('blackSwanSection');
+    if (section) section.classList.add('hidden');
+  }
+
+  private async showBlackSwanAnalysis(): Promise<void> {
+    if (!this.blackSwanPanel) return;
+
+    const mainContent = document.getElementById('mainContent');
+    const section = document.getElementById('blackSwanSection');
+    const liveNewsPanel = document.querySelector('[data-panel="live-news"]');
+    
+    if (!mainContent || !section) return;
+
+    const isVisible = !section.classList.contains('hidden');
+    
+    if (isVisible) {
+      section.classList.add('hidden');
+      mainContent.classList.remove('black-swan-active');
+      if (liveNewsPanel) (liveNewsPanel as HTMLElement).style.display = '';
+      
+      // Trigger map resize
+      setTimeout(() => this.map?.render(), 300);
+      return;
+    }
+
+    // Show and update
+    section.classList.remove('hidden');
+    mainContent.classList.add('black-swan-active');
+    if (liveNewsPanel) (liveNewsPanel as HTMLElement).style.display = 'none';
+    
+    // Trigger map resize
+    setTimeout(() => this.map?.render(), 300);
+
+    this.blackSwanPanel.show();
+
+    // Aggregate data from ALL sources
+    const dataSnapshot: any = {
+      markets: this.latestMarkets,
+      sectors: this.latestSectors,
+      commodities: this.latestCommodities,
+      crypto: this.latestCrypto,
+      economic: this.latestEconomicData,
+      predictions: this.latestPredictions,
+      earthquakes: this.map?.getEarthquakes() || [],
+      protests: this.map?.getProtests() || [],
+      outages: this.map?.getOutages() || [],
+      vessels: this.map?.getMilitaryVessels() || [],
+      flights: this.map?.getMilitaryFlights() || [],
+      weather: this.map?.getWeatherAlerts() || [],
+      news: this.allNews,
+      alertCounts: this.getNewsAlertCounts(),
+    };
+
+    try {
+      const analysis = await analyzeBlackSwans(dataSnapshot);
+      this.blackSwanPanel.updateAnalysis(analysis);
+    } catch (error) {
+      console.error('[Black Swan] Analysis failed:', error);
+      // Update with empty/error state to stop "Scanning" indicator
+      this.blackSwanPanel.updateAnalysis({
+        signals: [],
+        narratives: [],
+        globalRiskScore: 0,
+        trendDirection: 'stable',
+        hypothesis: {
+          title: 'ANALYSIS ENGINE ERROR',
+          summary: 'The black swan analyzer encountered a critical fault while processing data streams.',
+          commentary: (error as Error).message,
+          reasoning: ['Check browser console for full stack trace.'],
+          confidence: 0,
+          riskMatrix: { probability: 0, impact: 0 }
+        },
+        martingaleMetrics: { accumulationRate: 0, decayFactor: 0, compoundedRisk: 0 },
+        correlationMatrix: Array(6).fill(0).map(() => Array(6).fill(0)),
+        dimensionLabels: ['Error'],
+        timestamp: new Date()
+      });
+    }
+  }
+
+  private async getMarketData(): Promise<any[]> {
+    // Get current market data from markets panel
+    const marketsPanel = this.panels['markets'] as any;
+    if (!marketsPanel || !marketsPanel.markets) return [];
+    return marketsPanel.markets || [];
+  }
+
+  private async getEarthquakeData(): Promise<any[]> {
+    // Get earthquakes from map
+    if (!this.map) return [];
+    return (this.map as any).earthquakes || [];
+  }
+
+  private async getProtestData(): Promise<any[]> {
+    // Get protest events from map
+    if (!this.map) return [];
+    const protests = (this.map as any).protests || [];
+    return protests;
+  }
+
+  private async getOutageData(): Promise<any[]> {
+    // Get internet outages from map
+    if (!this.map) return [];
+    return (this.map as any).outages || [];
+  }
+
+  private getNewsAlertCounts(): Array<{ category: string; alertCount: number }> {
+    // Count alert keywords in news across all panels
+    const counts: Array<{ category: string; alertCount: number }> = [];
+    
+    for (const [category, panel] of Object.entries(this.newsPanels)) {
+      const items = (panel as any).items || [];
+      const alertCount = items.filter((item: any) => item.isAlert).length;
+      if (alertCount > 0) {
+        counts.push({ category, alertCount });
+      }
+    }
+    
+    return counts;
   }
 }

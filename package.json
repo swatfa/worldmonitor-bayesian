@@ -10,8 +10,10 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
+    "@types/three": "^0.182.0",
     "@types/topojson-client": "^3.1.5",
     "@types/topojson-specification": "^1.0.5",
+    "three": "^0.182.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "ws": "^8.19.0"

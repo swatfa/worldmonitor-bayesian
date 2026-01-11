@@ -2262,6 +2262,30 @@ export class MapComponent {
     return { ...this.state };
   }
 
+  public getEarthquakes(): Earthquake[] {
+    return [...this.earthquakes];
+  }
+
+  public getWeatherAlerts(): WeatherAlert[] {
+    return [...this.weatherAlerts];
+  }
+
+  public getOutages(): InternetOutage[] {
+    return [...this.outages];
+  }
+
+  public getProtests(): SocialUnrestEvent[] {
+    return [...this.protests];
+  }
+
+  public getMilitaryFlights(): MilitaryFlight[] {
+    return [...this.militaryFlights];
+  }
+
+  public getMilitaryVessels(): MilitaryVessel[] {
+    return [...this.militaryVessels];
+  }
+
   public getCenter(): { lat: number; lon: number } | null {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
